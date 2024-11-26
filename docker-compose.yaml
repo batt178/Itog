@@ -1,0 +1,25 @@
+version: "1"
+name: postgres-python
+services:
+    db:
+      image: postgres:13
+      container_name: postgres-container
+      environment:
+        POSTGRES_USER: bat
+        POSTGRES_PASSWORD: mypassword
+        POSTGRES_DB: baturin
+      ports:
+        - "5432:5432"
+      restart: unless-stopped
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready  -U bat -d baturin"]
+        interval: 5s
+        timeout: 10s
+        retries: 3
+    python:
+      build:
+        dockerfile: Dockerfile
+      container_name:  python-container
+      depends_on:
+        db:
+          condition: service_healthy
